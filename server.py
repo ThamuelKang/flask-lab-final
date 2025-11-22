@@ -59,7 +59,7 @@ def add_item():
         return jsonify({"error": "Missing required fields"}), 400
 
     # New ID
-    new_id = max(item["id"] for item in inventory) + 1
+    new_id = max([item["id"] for item in inventory], default=0) + 1
 
     new_item = {
         "id": new_id,
@@ -83,6 +83,8 @@ def get_item(item_id):
         return jsonify(item)
     return jsonify({"error": "Item not found"}), 404
 
+
+# Get product from OpenFoodFacts
 @app.route("/product/<barcode>", methods=["GET"])
 def fetch_product(barcode):
     url = f"https://world.openfoodfacts.org/api/v0/product/{barcode}.json"
@@ -104,5 +106,6 @@ def fetch_product(barcode):
     }
     return jsonify(product_info)
 
+
 if __name__ == "__main__":
-    app.run(host="localhost", port=4000, debug=True)
+    app.run(host="localhost", port=5555, debug=True)
