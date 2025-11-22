@@ -107,5 +107,33 @@ def fetch_product(barcode):
     return jsonify(product_info)
 
 
+# Update an inventory item
+@app.route("/inventory/<int:item_id>", methods=["PUT"])
+def update_item(item_id):
+    item = find_item(item_id)
+    if not item:
+        return jsonify({"error": "Item not found"}), 404
+
+    data = request.get_json()
+    # Update only the provided fields
+    for field in ["name", "barcode", "price", "stock", "brand", "category"]:
+        if field in data:
+            item[field] = data[field]
+
+    return jsonify({"message": "Item updated", "item": item})
+
+
+# Delete an inventory item
+@app.route("/inventory/<int:item_id>", methods=["DELETE"])
+def delete_item(item_id):
+    global inventory
+    item = find_item(item_id)
+    if not item:
+        return jsonify({"error": "Item not found"}), 404
+
+    inventory = [i for i in inventory if i["id"] != item_id]
+    return jsonify({"message": f"Item with id {item_id} deleted"})
+
+
 if __name__ == "__main__":
     app.run(host="localhost", port=5555, debug=True)
